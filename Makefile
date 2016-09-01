@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-O2 -std=gnu++11
+CXXFLAGS=-Ofast -flto -std=gnu++11
 LDFLAGS=-lpng
 
 all: draw
