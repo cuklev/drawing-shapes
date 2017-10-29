@@ -1,3 +1,12 @@
 # Drawing shapes
 
-Code till I feel satisfied
+Build instructions:
+```
+meson build
+ninja -C build
+```
+
+Example usage:
+```
+build/draw something.png
+```
