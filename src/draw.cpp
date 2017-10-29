@@ -31,10 +31,10 @@ int main(int argc, char **argv) {
 	png::image<png::rgb_pixel> output(WIDTH, HEIGHT);
 
 	std::atomic<png::uint_32> atomic_y(0);
-	std::vector<std::thread> threads(8);
+	std::vector<std::thread> threads;
 
-	for(auto& t: threads)
-		t = std::thread([&atomic_y, &output, &shapes] {
+	for(int i = std::thread::hardware_concurrency(); i > 0; --i)
+		threads.emplace_back([&atomic_y, &output, &shapes] {
 				png::uint_32 y;
 				while((y = atomic_y++) < output.get_height()) {
 					for(png::uint_32 x = 0; x < output.get_width(); ++x) {
