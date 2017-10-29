@@ -5,5 +5,7 @@ source_files = [
 	'./src/shapes.cpp'
 ]
 pngpp = dependency('libpng')
+pthread = dependency('threads')
+deps = [ pngpp, pthread ]
 
-executable('draw', source_files, dependencies : pngpp)
+executable('draw', source_files, dependencies : deps)

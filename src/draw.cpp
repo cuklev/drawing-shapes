@@ -1,6 +1,8 @@
 #include "shapes.hpp"
 #include <random>
 #include <png++/png.hpp>
+#include <thread>
+#include <atomic>
 
 const int WIDTH = 1920;
 const int HEIGHT = 1080;
@@ -28,16 +30,25 @@ int main(int argc, char **argv) {
 
 	png::image<png::rgb_pixel> output(WIDTH, HEIGHT);
 
-	for(png::uint_32 y = 0; y < output.get_height(); ++y) {
-		for(png::uint_32 x = 0; x < output.get_width(); ++x) {
-			for(auto& s: shapes) {
-				auto result = s(x, y);
-				//output[y][x].blue -= result;
-				output[y][x].green += result;
-				//output[y][x].red += result;
-			}
-		}
-	}
+	std::atomic<png::uint_32> atomic_y(0);
+	std::vector<std::thread> threads(8);
+
+	for(auto& t: threads)
+		t = std::thread([&atomic_y, &output, &shapes] {
+				png::uint_32 y;
+				while((y = atomic_y++) < output.get_height()) {
+					for(png::uint_32 x = 0; x < output.get_width(); ++x) {
+						for(auto& s: shapes) {
+							auto result = s(x, y);
+							//output[y][x].blue -= result;
+							output[y][x].green += result;
+							//output[y][x].red += result;
+						}
+					}
+				}
+			});
+
+	for(auto& t: threads) t.join();
 
 	output.write(argv[1]);
 }
